@@ -7,12 +7,14 @@ from flask import Blueprint
 try:
     from google.cloud import tasks_v2
 except ImportError:
+    # Why raise a different error here?
     raise ImportError(
         "The secure_scaffold.contrib.cloud_tasks.tasks module currently "
         "requires google-cloud-tasks to run. Please ensure it is installed."
     )
 from secure_scaffold import config
 
+# Use __name__ for logger names.
 logger = logging.getLogger(__file__)
 
 
@@ -142,6 +144,9 @@ class Task:
         """
         Call the stored function as if the instance was the function itself.
         """
+        # I don't see code to check that the request was made by the cloud
+        # tasks API and not by an unauthorized user.
+        # https://cloud.google.com/tasks/docs/creating-appengine-handlers#reading_app_engine_task_request_headers
         return self._func(*args, **kwargs)
 
 
@@ -177,6 +182,8 @@ class TaskRunner:
         Using the given route and the URL prefix generate the path a task
         will use.
         """
+        # Won't this be weird on Windows development environments? Maybe this
+        # is supposed to use urllib.parse.urljoin() or just '/'.join()
         return os.path.join(self.url_prefix, route.lstrip('/'))
 
     def task(self, route: str = None, methods: tuple = ('POST',), **kwargs) -> Callable:

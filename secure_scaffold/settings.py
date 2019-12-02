@@ -17,6 +17,8 @@ def generate_nonce() -> str:
     return b64_str.decode().rstrip('=')
 
 
+# Security bug! CSP nonces must be unique per request.
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
 CSP_NONCE = generate_nonce()
 
 CSP_CONFIG = {
@@ -29,11 +31,13 @@ CSP_CONFIG = {
 
 REPORT_TO_HEADER = {
     'group': 'csp-endpoint',
+    # What is this in days?
     'max-age': 10886400,
     'endpoints': ['/csp/'],
 }
 
 NON_XSRF_PROTECTED_METHODS = ('options', 'head', 'get')
+# What is this in days?
 XSRF_TIME_LIMIT = 86400
 
 SECRET_KEY = os.urandom(64)

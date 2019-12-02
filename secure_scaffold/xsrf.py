@@ -19,6 +19,7 @@ class XSRFError(Exception):
     status_code = 401
 
     def __init__(self, message: str, status_code: int = None, payload: dict = None):
+        # Why not use use super().__init__() ?
         Exception.__init__(self)
         self.message = message
         if status_code is not None:
@@ -48,6 +49,8 @@ def handle_xsrf_error(error):
     return response
 
 
+# The function signature says non_xsrf_protected_methods is a list, but
+# the default value is a tuple (and maybe it should be a frozenset).
 def xsrf_protected(non_xsrf_protected_methods: List[str] = config.get_setting('NON_XSRF_PROTECTED_METHODS')):
     """
     Decorator to validate XSRF tokens for any methods but GET, HEAD, OPTIONS.
