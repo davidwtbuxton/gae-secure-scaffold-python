@@ -77,6 +77,8 @@ def configure_app(app: flask.Flask) -> None:
         config = get_config_from_datastore()
         app.config["SECRET_KEY"] = config.secret_key
 
+    app.config.get("")
+
 
 def get_config_from_datastore() -> AppConfig:
     # This happens at application startup, so we use a new NDB context.

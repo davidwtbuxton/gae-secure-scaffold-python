@@ -3,8 +3,8 @@
 	<head>
 		<title>{{ page_title }}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" href="/static/bulma.min.css" nonce="{{ csp_nonce() }}">
-		<link rel="stylesheet" href="/static/main.css" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="{{ url_for("static", filename="bulma.min.css") }}" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="{{ url_for("static", filename="main.css") }}" nonce="{{ csp_nonce() }}">
 		{% block extrahead %}{% endblock %}
 	</head>
 	<body>

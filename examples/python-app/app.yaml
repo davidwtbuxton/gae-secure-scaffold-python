@@ -6,8 +6,10 @@ runtime: python37
 
 handlers:
 
-  - url: /static/
+  # Supports cache-busting so clients always get fresh statics.
+  - url: /static/[a-z0-9]+/
     static_dir: static
+    expiration: 7d
     secure: always
     http_headers:
       Strict-Transport-Security: "max-age=2592000; includeSubdomains"

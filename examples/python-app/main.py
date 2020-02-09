@@ -1,3 +1,4 @@
+import hashlib
 import os
 import re
 import unicodedata
@@ -8,7 +9,37 @@ import mistune
 import securescaffold
 
 
-app = securescaffold.create_app(__name__)
+def get_static_url_path():
+    """Generate a version-specific path for serving static assets.
+
+    This is a blunt approach to adding a cache-busting hash to static
+    filenames, where the hash is updated when the static file has changed.
+
+    For local development this returns "/static/dev". On App Engine, this
+    returns "/static/xyz" where "xyz" is derived from the deployed version.
+
+    This means you get static URLs which change for every deployed version, so
+    you can configure static assets to be cached, but a new deployment will
+    result in clients getting the latest version (assuming jinja templates use
+    `{{ url_for("static", filename="my.css") }}` to reference assets).
+
+    The final piece of the puzzle is configuring `app.yaml` to serve static
+    assets with a hash in the path.
+    """
+    app_version = os.getenv("GAE_VERSION", "dev")
+
+    if app_version == "dev":
+        fingerprint = "dev"
+    else:
+        # 6 characters means we only take 3 bytes of the digest. Good enough!
+        app_version = app_version.encode("ascii", errors="ignore")
+        fingerprint = hashlib.md5(app_version).hexdigest()[:6]
+
+    return f"/static/{fingerprint}"
+
+
+static_url_path = get_static_url_path()
+app = securescaffold.create_app(__name__, static_url_path=static_url_path)
 
 
 @app.route("/")
